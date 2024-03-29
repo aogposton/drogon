@@ -48,6 +48,7 @@ aux_source_directory(models MODEL_SRC)
 
 drogon_create_views(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/views
                     ${CMAKE_CURRENT_BINARY_DIR})
+
 # use the following line to create views with namespaces.
 # drogon_create_views(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/views
 #                     ${CMAKE_CURRENT_BINARY_DIR} TRUE)
@@ -55,6 +56,13 @@ drogon_create_views(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/views
 # and path namespaces.
 # drogon_create_views(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/views
 #                     ${CMAKE_CURRENT_BINARY_DIR} TRUE CHANGE_ME)
+
+file(GLOB SCP_LIST ${CMAKE_CURRENT_SOURCE_DIR}/views/*.csp)
+foreach(cspFile ${SCP_LIST})
+  execute_process(COMMAND basename -s .csp ${cspFile} OUTPUT_VARIABLE classname)
+  message(STATUS "Linking View:" ${classname})
+  set(VIEW_SRC ${VIEW_SRC} ${classname}.cc)
+endforeach()
 
 target_include_directories(${PROJECT_NAME}
                            PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
@@ -65,7 +73,8 @@ target_sources(${PROJECT_NAME}
                ${CTL_SRC}
                ${FILTER_SRC}
                ${PLUGIN_SRC}
-               ${MODEL_SRC})
+               ${MODEL_SRC}
+               ${VIEW_SRC})
 # ##############################################################################
 # uncomment the following line for dynamically loading views 
 # set_property(TARGET ${PROJECT_NAME} PROPERTY ENABLE_EXPORTS ON)
